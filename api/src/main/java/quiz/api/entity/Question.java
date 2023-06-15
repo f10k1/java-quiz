@@ -1,6 +1,9 @@
 package quiz.api.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
+import org.springframework.lang.Nullable;
 
 import java.util.Set;
 
@@ -11,7 +14,24 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @NotNull
     private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(Set<Answer> answers) {
+        this.answers = answers;
+    }
 
     @OneToMany(mappedBy = "question", orphanRemoval = true)
     private Set<Answer> answers;

@@ -1,6 +1,7 @@
 package quiz.api.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,10 +14,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @NotNull
     private String name;
 
+    @NotNull
     private String email;
 
+    @NotNull
     private String password;
 
     @OneToMany(mappedBy = "user")

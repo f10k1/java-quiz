@@ -1,6 +1,7 @@
 package quiz.api.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Date;
@@ -12,8 +13,10 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @NotNull
     private Integer title;
 
+    @NotNull
     private Boolean correct;
 
     @ManyToOne()

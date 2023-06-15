@@ -1,6 +1,7 @@
 package quiz.api.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Date;
@@ -12,11 +13,13 @@ public class Score {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @NotNull
     private Integer points;
 
     @CreatedDate
     private Date created;
 
+    @NotNull
     @ManyToOne()
     @JoinColumn(name = "grade_id")
     private Grade grade;

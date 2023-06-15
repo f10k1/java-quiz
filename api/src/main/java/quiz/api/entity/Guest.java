@@ -1,6 +1,7 @@
 package quiz.api.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Set;
 
@@ -10,6 +11,7 @@ public class Guest {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @NotNull
     private String name;
 
     @OneToMany(mappedBy = "guest")
