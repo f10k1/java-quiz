@@ -1,15 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import {
-    FormGroup,
-    Validators,
-} from '@angular/forms';
-import { FormBuilder } from '@angular/forms';
-
-import FormErrorStateMatcher from './core/input-error.matcher';
-import { AuthService } from './core/services/auth.service';
-import User from './core/types/user.interface';
-import { SystemService } from './core/services/system.service';
-import Loadings from './core/types/loading.interface';
+import { Component, OnInit } from "@angular/core";
+import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
+import { Observable, Subscription } from "rxjs";
+import { SystemService } from "./core/services/system.service";
+import { NotificationComponent } from "./share/notification/notification.component";
+import { NOTIFICATION_TYPES } from "./core/types/notification.interface";
 
 @Component({
     selector: 'app-root',
@@ -17,34 +11,29 @@ import Loadings from './core/types/loading.interface';
     styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
+    public auth: boolean = false;
+    public notificationRef: ReturnType<typeof this._snackBar.openFromComponent> | undefined;
 
-    public form: FormGroup = this.fb.group({
-        username: ['', Validators.required],
-        password: ['', Validators.required]
-    });
+    constructor(private _snackBar: MatSnackBar, private _systemService: SystemService) { }
 
-    public loginLoading: boolean = false;
-
-    public matcher = new FormErrorStateMatcher();
-
-    public user: User | undefined;
-
-    constructor(private fb: FormBuilder, private authService: AuthService, private systemService: SystemService) { }
-
-    public ngOnInit(): void {
-        this.systemService.loadings.subscribe((value: Loadings) => {
-            this.loginLoading = value['login'] ?? false;
-        });
-        this.authService.user.subscribe((value: User) => {
-            this.user = value;
+    ngOnInit() {
+        this._systemService.notification.subscribe((value) => {
+            if (value) {
+                const options: MatSnackBarConfig = {
+                    data: {
+                        content: value.content,
+                        action: value.action,
+                    },
+                    panelClass: [NOTIFICATION_TYPES[value.type].toLowerCase()]
+                };
+                if (value.timespan) options['duration'] = value.timespan;
+                this.notificationRef = this._snackBar.openFromComponent(NotificationComponent, options);
+                this.notificationRef.afterDismissed().subscribe((info) => {
+                    if (value.onDismiss) value.onDismiss();
+                    this._systemService.removeNotification();
+                    this.notificationRef = undefined;
+                });
+            }
         });
     }
-
-    public submitLogin(): void {
-        if (!this.form.valid) return;
-
-        this.authService.login(this.form.get("username")?.value, this.form.get("password")?.value);
-
-    }
-
 }
