@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import quiz.api.validator.JwtTokenValidator;
 
 @Validated
 @RestController
@@ -66,6 +67,19 @@ public class AuthController {
             return ResponseEntity.ok().body(new AuthResponse(newUser.getName(), token));
         }
         catch(Exception err){
+            if(err instanceof JOSEException || err instanceof BadCredentialsException) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.internalServerError().body(err.getMessage());
+        }
+    }
+
+    @PostMapping("/checkJwt")
+    public ResponseEntity<?> checkJwt(@Valid @RequestBody JwtTokenValidator request){
+        try{
+            if (!jwtTokenUtils.validateToken(request.getJwtToken())){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception err){
             if(err instanceof JOSEException || err instanceof BadCredentialsException) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             return ResponseEntity.internalServerError().body(err.getMessage());
         }
