@@ -1,0 +1,6 @@
+<span matSnackBarLabel>
+    {{snackBarData.content}}
+</span>
+<span matSnackBarActions>
+    <button mat-button matSnackBarAction (click)="snackBarRef.dismissWithAction()">{{snackBarData.action}}</button>
+</span>

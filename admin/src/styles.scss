@@ -11,3 +11,16 @@ body {
     background: #303030;
     color: white;
 }
+
+.mat-mdc-snack-bar-container {
+    &.success {
+        --mdc-snackbar-container-color: #23c552;
+        --mat-mdc-snack-bar-button-color: #fff;
+        --mdc-snackbar-supporting-text-color: #fff;
+    }
+    &.error{
+        --mdc-snackbar-container-color: #f84f31;
+        --mat-mdc-snack-bar-button-color: #fff;
+        --mdc-snackbar-supporting-text-color: #fff;
+    }
+}
