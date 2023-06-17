@@ -17,8 +17,6 @@ export default class PrepareInterceptor implements HttpInterceptor {
 
         const preparedRequest = httpRequest.clone({ url: `http://localhost:8090/${httpRequest.url}`, setHeaders: headers });
 
-        console.log(preparedRequest);
-
         return next.handle(preparedRequest);
     }
 
