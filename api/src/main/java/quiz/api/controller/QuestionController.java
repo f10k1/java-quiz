@@ -30,6 +30,11 @@ public class QuestionController {
         return questionRepository.findAll();
     }
 
+    @GetMapping(path="/random")
+    public @ResponseBody Iterable<Question> getRandomQuestions(@RequestParam(defaultValue = "10") Integer limit) {
+        return questionRepository.getRandom(limit);
+    }
+
     @GetMapping(path="/{id}")
     public @ResponseBody Optional<Question> getQuestion(@PathVariable Integer id) {
         return questionRepository.findById(id);
@@ -46,8 +51,9 @@ public class QuestionController {
                 newQuestion.setAnswers((Set<Answer>)answers);
             }
 
-            questionRepository.save(newQuestion);
-            return ResponseEntity.ok(HttpStatus.CREATED);
+            Question question = questionRepository.save(newQuestion);
+
+            return ResponseEntity.ok().body(question);
         }
         catch (Exception err){
             return ResponseEntity.internalServerError().body(err.getMessage());

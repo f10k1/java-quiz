@@ -52,20 +52,22 @@ public class AuthController {
 
     @PostMapping(path = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<?> addNewUser(@Valid @RequestBody AuthRegisterValidator request){
-        User checkUser = userRepository.checkIfExists(request.getUsername(), request.getEmail());
-        if (checkUser != null) return ResponseEntity.ok("{error: \"User exists\"}");
-        User newUser = new User();
-        newUser.setName(request.getUsername());
-        newUser.setEmail(request.getEmail());
-        newUser.setPassword(request.getPassword());
-        userRepository.save(newUser);
         try{
+            User checkUser = userRepository.checkIfExists(request.getUsername(), request.getEmail());
+            if (checkUser != null) return ResponseEntity.ok("{error: \"User exists\"}");
+            User newUser = new User();
+            newUser.setName(request.getUsername());
+            newUser.setEmail(request.getEmail());
+            newUser.setPassword(request.getPassword());
+            userRepository.save(newUser);
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(newUser.getName(), newUser.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtTokenUtils.generateToken(authentication);
-           return ResponseEntity.ok().body(new AuthResponse(newUser.getName(), token));
-        } catch (BadCredentialsException | JOSEException exception){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.ok().body(new AuthResponse(newUser.getName(), token));
+        }
+        catch(Exception err){
+            if(err instanceof JOSEException || err instanceof BadCredentialsException) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.internalServerError().body(err.getMessage());
         }
     }
 }
