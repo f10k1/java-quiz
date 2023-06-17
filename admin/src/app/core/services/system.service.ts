@@ -2,58 +2,58 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, timeout } from 'rxjs';
 import Loadings from '../types/loading.interface';
 import Notification from '../types/notification.interface';
+import Message from '../types/message.interface';
 
 @Injectable({
     providedIn: 'root'
 })
 export class SystemService {
 
-    private notifications: Notification[] = [];
+    private _notifications: Notification[] = [];
+    private _messages: Message = {};
+    private _loadings: Loadings = {};
 
-    private $notification: BehaviorSubject<Notification> = new BehaviorSubject(this.notifications[0] ?? null);
-    private $loadings: BehaviorSubject<Loadings> = new BehaviorSubject({});
+    private $notification: BehaviorSubject<Notification> = new BehaviorSubject(this._notifications[0] ?? null);
+    private $messages: BehaviorSubject<Message> = new BehaviorSubject(this._messages);
+    private $loadings: BehaviorSubject<Loadings> = new BehaviorSubject(this._loadings);
 
-    public notification: Observable<Notification> = this.$notification.asObservable();
+    public notification: Observable<Notification | null> = this.$notification.asObservable();
     public loadings: Observable<Loadings> = this.$loadings.asObservable();
-
-    private notificationTimeout: ReturnType<typeof setTimeout> | null = null;
-
-    constructor() {
-        this.notification.subscribe((value: Notification) => {
-            if (this.notificationTimeout) window.clearTimeout(this.notificationTimeout);
-
-            if (value && !value.timespan) {
-                this.notificationTimeout = null;
-                return;
-            };
-
-            this.notificationTimeout = setTimeout(() => {
-                this.removeNotification();
-            });
-        });
-    }
+    public messages: Observable<Message> = this.$messages.asObservable();
 
     public addNotification(notification: Notification): void {
-        this.notifications.push(notification);
+        this._notifications.push(notification);
 
-        if (this.notifications.length === 1) this.$notification.next(notification);
+        if (this._notifications.length === 1) this.$notification.next(notification);
     }
     public removeNotification(): void {
-        this.notifications.pop();
+        this._notifications.pop();
 
-        this.$notification.next(this.notifications[0] ?? null);
+        this.$notification.next(this._notifications[0] ?? null);
+    }
+
+    public addMessage(message: Message): void {
+        this._messages = { ...this._messages, ...message };
+
+        this.$messages.next(message);
+    }
+    public removeMessage(name: string): void {
+        if (!this._messages[name]) return;
+
+        delete this._messages[name];
+
+        this.$messages.next(this._messages);
     }
 
     public addLoading(loading: string) {
-        this.$loadings.next({ ...this.$loadings.getValue, [loading]: true });
+        this._loadings[loading] = true;
+        this.$loadings.next(this._loadings);
     }
     public removeLoading(loading: string) {
-        const tmp: Loadings = this.$loadings.getValue();
+        if (!this._loadings[loading]) return;
 
-        if (!tmp[loading]) return;
+        delete this._loadings[loading];
 
-        delete tmp[loading];
-
-        this.$loadings.next(tmp);
+        this.$loadings.next(this._loadings);
     }
 }

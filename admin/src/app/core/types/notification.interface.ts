@@ -1,16 +1,12 @@
 export default interface Notification {
     type: NOTIFICATION_TYPES,
     content: string,
-    actions?: boolean,
-    closable?: boolean,
     timespan?: number,
-    onAccept?: Function,
-    onReject?: Function
+    onDismiss?: Function,
+    action: string,
 }
 
-enum NOTIFICATION_TYPES {
+export enum NOTIFICATION_TYPES {
     ERROR,
     SUCCESS,
-    INFO,
-    WARNING
 }
