@@ -3,6 +3,7 @@ package quiz.api.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.lang.Nullable;
 
 import java.util.Set;
@@ -32,6 +33,9 @@ public class Question {
     public void setAnswers(Set<Answer> answers) {
         this.answers = answers;
     }
+
+    @ColumnDefault("false")
+    private Boolean active;
 
     @OneToMany(mappedBy = "question", orphanRemoval = true)
     private Set<Answer> answers;
