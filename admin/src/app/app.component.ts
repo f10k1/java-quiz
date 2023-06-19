@@ -1,9 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
-import { Observable, Subscription } from "rxjs";
 import { SystemService } from "./core/services/system.service";
-import { NotificationComponent } from "./share/notification/notification.component";
 import { NOTIFICATION_TYPES } from "./core/types/notification.interface";
+import { AuthService } from "./core/services/auth.service";
 
 @Component({
     selector: 'app-root',
@@ -12,28 +11,12 @@ import { NOTIFICATION_TYPES } from "./core/types/notification.interface";
 })
 export class AppComponent implements OnInit {
     public auth: boolean = false;
-    public notificationRef: ReturnType<typeof this._snackBar.openFromComponent> | undefined;
-
-    constructor(private _snackBar: MatSnackBar, private _systemService: SystemService) { }
+    constructor(private _authService: AuthService) { }
 
     ngOnInit() {
-        this._systemService.notification.subscribe((value) => {
-            if (value) {
-                const options: MatSnackBarConfig = {
-                    data: {
-                        content: value.content,
-                        action: value.action,
-                    },
-                    panelClass: [NOTIFICATION_TYPES[value.type].toLowerCase()]
-                };
-                if (value.timespan) options['duration'] = value.timespan;
-                this.notificationRef = this._snackBar.openFromComponent(NotificationComponent, options);
-                this.notificationRef.afterDismissed().subscribe((info) => {
-                    if (value.onDismiss) value.onDismiss();
-                    this._systemService.removeNotification();
-                    this.notificationRef = undefined;
-                });
-            }
+        this._authService.user.subscribe((value) => {
+            if (!this.auth && value) this.auth = true;
+            else if (this.auth && !value) this.auth = false;
         });
     }
 }

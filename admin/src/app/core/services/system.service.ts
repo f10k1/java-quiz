@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable, timeout } from 'rxjs';
 import Loadings from '../types/loading.interface';
-import Notification from '../types/notification.interface';
+import Notification, { NOTIFICATION_TYPES } from '../types/notification.interface';
 import Message from '../types/message.interface';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
 @Injectable({
     providedIn: 'root'
@@ -12,6 +13,7 @@ export class SystemService {
     private _notifications: Notification[] = [];
     private _messages: Message = {};
     private _loadings: Loadings = {};
+    private _notificationRef: ReturnType<typeof this._snackBar.openFromComponent> | undefined;
 
     private $notification: BehaviorSubject<Notification> = new BehaviorSubject(this._notifications[0] ?? null);
     private $messages: BehaviorSubject<Message> = new BehaviorSubject(this._messages);
@@ -21,13 +23,33 @@ export class SystemService {
     public loadings: Observable<Loadings> = this.$loadings.asObservable();
     public messages: Observable<Message> = this.$messages.asObservable();
 
+    constructor(private _snackBar: MatSnackBar, private _zone: NgZone) {
+        this.notification.subscribe((value) => {
+            if (value) {
+                const options: MatSnackBarConfig = {
+                    panelClass: [NOTIFICATION_TYPES[value.type].toLowerCase()],
+                    verticalPosition: "bottom",
+                    horizontalPosition: "center"
+                };
+                if (value.timespan) options['duration'] = value.timespan;
+                this._zone.run(() => {
+                    this._notificationRef = this._snackBar.open(value.content, value.action, options);
+                    this._notificationRef.afterDismissed().subscribe((info) => {
+                        if (value.onDismiss) value.onDismiss();
+                        this.removeNotification();
+                    });
+                })
+            }
+        });
+    }
+
     public addNotification(notification: Notification): void {
         this._notifications.push(notification);
 
         if (this._notifications.length === 1) this.$notification.next(notification);
     }
     public removeNotification(): void {
-        this._notifications.pop();
+        this._notifications = this._notifications.slice(1);
 
         this.$notification.next(this._notifications[0] ?? null);
     }
@@ -49,6 +71,7 @@ export class SystemService {
         this._loadings[loading] = true;
         this.$loadings.next(this._loadings);
     }
+
     public removeLoading(loading: string) {
         if (!this._loadings[loading]) return;
 

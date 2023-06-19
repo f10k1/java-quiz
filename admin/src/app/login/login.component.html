@@ -1,10 +1,12 @@
 <main class="login-page">
-    <form [formGroup]="form" (ngSubmit)="submitLogin()" *ngIf="jwtLoading; else jwtSpinner">
+    <form [formGroup]="form" (ngSubmit)="submitLogin()" *ngIf="!jwtLoading; else jwtSpinner">
         <mat-card class="login-card">
             <mat-card-header>
                 <mat-card-title>Logowanie</mat-card-title>
                 <mat-card-subtitle>
-                    <mat-error *ngIf="messages['login']" [innerHtml]="messages['login']"></mat-error>
+                    <ng-container *ngIf="$messages | async as messages">
+                        <mat-error *ngIf="messages['login']" [innerHtml]="messages['login']"></mat-error>
+                    </ng-container>
                 </mat-card-subtitle>
             </mat-card-header>
             <mat-card-content class="login-card__content">
@@ -30,9 +32,9 @@
                 </p>
             </mat-card-content>
             <mat-card-actions class="login-card__buttons">
-                <button mat-raised-button color="accent" class="" [disabled]="loginLoading || !form.valid"
+                <button mat-raised-button color="accent" class="btn-center" [disabled]="loginLoading || !form.valid"
                     type="submit">
-                    <div *ngIf="!loginLoading; else loginSpinner">
+                    <div *ngIf="!loginLoading; else loginSpinner" class="btn-icon">
                         Zaloguj się
                         <mat-icon aria-hidden="false" aria-label="Wyślij" fontIcon="login"></mat-icon>
                     </div>
