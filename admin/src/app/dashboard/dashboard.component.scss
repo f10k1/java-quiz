@@ -1,0 +1,18 @@
+.dashboard-module{
+    padding: 150px 50px;
+}
+.dashboard-sidenav{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: auto;
+    height: 100%;
+    padding: 30px;
+    &__list{
+        gap: 30px;
+    }
+}
+
+.dashboard-content{
+    padding: 50px;
+}

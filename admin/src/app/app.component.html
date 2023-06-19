@@ -1,4 +1,4 @@
-<app-login (loggedIn)="auth = true" *ngIf="!auth; else dashboard"></app-login>
+<app-login *ngIf="!auth; else dashboard"></app-login>
 <ng-template #dashboard>
-    <router-outlet></router-outlet>
+    <app-dashboard></app-dashboard>
 </ng-template>

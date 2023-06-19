@@ -1,0 +1,42 @@
+<main class="dashboard-module">
+    <mat-drawer-container>
+        <mat-drawer mode="side" opened class="dashboard-sidenav">
+            <mat-list role="list" class="dashboard-sidenav__list">
+                <mat-list-item>
+                    <span matListItemTitle>Panel sterowania</span>
+                </mat-list-item>
+                <mat-list-item role="listitem">
+                    <a routerLink="/questions" mat-flat-button color="link" class="btn-icon">
+                        Pytania
+                        <span></span>
+                        <mat-icon aria-hidden="false" aria-label="Pytania" fontIcon="question_mark"></mat-icon>
+                    </a>
+                </mat-list-item>
+                <mat-list-item role="listitem">
+                    <a routerLink="/questions" mat-flat-button class="btn-icon">
+                        Wyniki
+                        <mat-icon aria-hidden="false" aria-label="Wyniki" fontIcon="scoreboard"></mat-icon>
+                    </a>
+                </mat-list-item>
+                <mat-list-item role="listitem">
+                    <a routerLink="/questions" mat-flat-button>
+                        Oceny
+                        <mat-icon aria-hidden="false" aria-label="Wyślij" fontIcon="school"></mat-icon>
+                    </a>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item role="listitem">
+                    <button mat-button color="accent" class="btn-center" (click)="logout()">
+                        <div class="btn-icon">
+                            Wyloguj się
+                            <mat-icon aria-hidden="false" aria-label="Wyślij" fontIcon="logout"></mat-icon>
+                        </div>
+                    </button>
+                </mat-list-item>
+            </mat-list>
+        </mat-drawer>
+        <mat-drawer-content class="dashboard-content">
+            <router-outlet></router-outlet>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</main>
