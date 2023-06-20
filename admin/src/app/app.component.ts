@@ -1,7 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
-import { SystemService } from "./core/services/system.service";
-import { NOTIFICATION_TYPES } from "./core/types/notification.interface";
 import { AuthService } from "./core/services/auth.service";
 
 @Component({

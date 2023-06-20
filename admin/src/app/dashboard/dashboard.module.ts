@@ -10,11 +10,24 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { QuestionTypeToText } from '../core/pipes/question-type-to-text.pipe';
+import { MatDialogModule } from '@angular/material/dialog';
+import { AddQuestionComponent } from './questions/add-question/add-question.component';
+import { EditQuestionComponent } from './questions/edit-question/edit-question.component';
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
     declarations: [
         DashboardComponent,
         QuestionsComponent,
+        QuestionTypeToText,
+        AddQuestionComponent,
+        EditQuestionComponent
     ],
     imports: [
         CommonModule,
@@ -26,6 +39,13 @@ import { MatPaginatorModule } from '@angular/material/paginator';
         MatTableModule,
         MatTooltipModule,
         MatPaginatorModule,
+        MatDialogModule,
+        MatToolbarModule,
+        MatFormFieldModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatRadioModule,
+        MatSlideToggleModule
     ],
     exports: [
         DashboardComponent
