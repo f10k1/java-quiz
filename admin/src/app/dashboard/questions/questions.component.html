@@ -1,25 +1,35 @@
-<mat-drawer-container>
-    <mat-drawer-content>
-        <table mat-table [dataSource]="questionsData" class="mat-elevation-z8" style="width: fit-content;">
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef> Pytanie </th>
-                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-            </ng-container>
-            <ng-container matColumnDef="answers">
-                <th mat-header-cell *matHeaderCellDef> Odpowiedzi </th>
-                <td mat-cell *matCellDef="let element"> {{element.answers}} </td>
-            </ng-container>
-            <ng-container matColumnDef="attachments">
-                <th mat-header-cell *matHeaderCellDef> Załączniki </th>
-                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayColumns;"></tr>
-        </table>
-        <mat-paginator [pageSizeOptions]="[5, 10, 20]" style="padding: 30px  0 0" showFirstLastButtons
+<table mat-table [dataSource]="questionsData" class="mat-elevation-z8 questions-table" style="width: fit-content;">
+    <ng-container matColumnDef="active">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element" [style]="{backgroundColor: element.active? '#23c552' : ''}"></td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Pytanie </th>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+    <ng-container matColumnDef="answers">
+        <th mat-header-cell *matHeaderCellDef> Odpowiedzi </th>
+        <td mat-cell *matCellDef="let element"> {{element.answers}} </td>
+    </ng-container>
+    <ng-container matColumnDef="attachment">
+        <th mat-header-cell *matHeaderCellDef> Załącznik </th>
+        <td mat-cell *matCellDef="let element"> {{element.attachment?.name}} </td>
+    </ng-container>
+    <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef> Typ pytania </th>
+        <td mat-cell *matCellDef="let element"> {{element.type | questionTypeToText}} </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayColumns;" (click)="false"></tr>
+</table>
+<mat-toolbar color="">
+    <mat-toolbar-row>
+        <button (click)="addQuestion()" mat-button color="accent">
+            <mat-icon fontIcon="add"></mat-icon>
+            Dodaj nowe pytanie
+        </button>
+        <mat-paginator color="primary" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
             aria-label="Wybierz stronę">
         </mat-paginator>
-    </mat-drawer-content>
-    <mat-drawer mode="side" opened="" style="width: 600px;">
-    </mat-drawer>
-</mat-drawer-container>
+    </mat-toolbar-row>
+</mat-toolbar>

@@ -1,0 +1,38 @@
+<h4 mat-dialog-title>Nowe pytanie</h4>
+<div mat-dialog-content>
+    <form action="" [formGroup]="form" (ngSubmit)="saveQuestion()">
+        <div>
+            <mat-slide-toggle formControlName="active">Pytanie aktywne</mat-slide-toggle>
+        </div>
+        <mat-form-field>
+            <mat-label>Pytanie</mat-label>
+            <input matInput formControlName="name">
+        </mat-form-field>
+        <mat-radio-group aria-label="Wybierz typ pytania" formControlName="type">
+            <span>
+                Typ pytania
+            </span>
+            <div>
+                <ng-template ngFor let-type [ngForOf]="QUESTION_TYPES | keyvalue" let-i="index">
+                    <mat-radio-button [value]="type.value">{{type.value | questionTypeToText}}</mat-radio-button>
+                </ng-template>
+            </div>
+        </mat-radio-group>
+        <div>
+            <button type="button" mat-raised-button (click)="fileInput.click()">Choose File</button>
+            <input hidden (change)="fileSelected()" #fileInput type="file">
+            <div *ngIf="attachmentFile" style="padding: 20px 0 0; display: flex; align-items: center; gap: 10px;">
+                <button mat-icon-button color="warn" (click)="removeFile()">
+                    <mat-icon fontIcon="close"></mat-icon>
+                </button>
+                    Wybrany plik: {{attachmentFile?.name}}
+            </div>
+        </div>
+        <div formGroupName="answers">
+
+        </div>
+        <button type="submit" mat-raised-button color="accent" [disabled]="!form.valid">
+            Zapisz
+        </button>
+    </form>
+</div>
