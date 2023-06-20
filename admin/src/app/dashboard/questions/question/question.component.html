@@ -1,6 +1,6 @@
 <h4 mat-dialog-title>Nowe pytanie</h4>
 <div mat-dialog-content>
-    <form action="" [formGroup]="form" (ngSubmit)="saveQuestion()">
+    <form [formGroup]="form" (ngSubmit)="saveQuestion()">
         <div>
             <mat-slide-toggle formControlName="active">Pytanie aktywne</mat-slide-toggle>
         </div>
@@ -31,8 +31,11 @@
         <div formGroupName="answers">
 
         </div>
-        <button type="submit" mat-raised-button color="accent" [disabled]="!form.valid">
-            Zapisz
+        <button type="submit" mat-raised-button color="accent" [disabled]="!form.valid || questionSentLoading">
+            <mat-spinner style="width: 30px; height: 30px;" *ngIf="questionSentLoading; else buttonText"></mat-spinner>
+            <ng-template #buttonText>
+                Zapisz
+            </ng-template>
         </button>
     </form>
 </div>

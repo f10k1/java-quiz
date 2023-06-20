@@ -13,15 +13,19 @@ export class SystemService {
     private _notifications: Notification[] = [];
     private _messages: Message = {};
     private _loadings: Loadings = {};
+    private _flags: Message = {};
     private _notificationRef: ReturnType<typeof this._snackBar.openFromComponent> | undefined;
 
     private $notification: BehaviorSubject<Notification> = new BehaviorSubject(this._notifications[0] ?? null);
     private $messages: BehaviorSubject<Message> = new BehaviorSubject(this._messages);
     private $loadings: BehaviorSubject<Loadings> = new BehaviorSubject(this._loadings);
+    private $flags: BehaviorSubject<Message> = new BehaviorSubject(this._flags);
+
 
     public notification: Observable<Notification | null> = this.$notification.asObservable();
     public loadings: Observable<Loadings> = this.$loadings.asObservable();
     public messages: Observable<Message> = this.$messages.asObservable();
+    public flags: Observable<Message> = this.$flags.asObservable();
 
     constructor(private _snackBar: MatSnackBar, private _zone: NgZone) {
         this.notification.subscribe((value) => {
@@ -38,7 +42,7 @@ export class SystemService {
                         if (value.onDismiss) value.onDismiss();
                         this.removeNotification();
                     });
-                })
+                });
             }
         });
     }
@@ -78,5 +82,26 @@ export class SystemService {
         delete this._loadings[loading];
 
         this.$loadings.next(this._loadings);
+    }
+
+    public addFlag(flag: Message) {
+        this._flags = { ...this._flags, ...flag };
+        this.$flags.next(this._flags);
+    }
+
+    public patchFlag(flag: string, newFlag: string) {
+        if (!this._flags[flag]) return;
+
+        this._flags[flag] = newFlag;
+
+        this.$flags.next(this._flags);
+    }
+
+    public removeFlag(flag: string) {
+        if (!this._flags[flag]) return;
+
+        delete this._flags[flag];
+
+        this.$flags.next(this._flags);
     }
 }

@@ -5,7 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { QuestionService } from 'src/app/core/services/question.service';
 import Question from 'src/app/core/types/question.interface';
-import { AddQuestionComponent } from './add-question/add-question.component';
+import { QuestionComponent } from './question/question.component';
 
 @Component({
     selector: 'app-questions',
@@ -34,6 +34,12 @@ export class QuestionsComponent implements OnInit, AfterViewInit {
     }
 
     public addQuestion() {
-        this._dialog.open(AddQuestionComponent);
+        this._dialog.open(QuestionComponent);
+    }
+
+    public editQuestion(question: Question) {
+        this._dialog.open(QuestionComponent, {
+            data: question
+        });
     }
 }
