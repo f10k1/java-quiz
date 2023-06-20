@@ -2,11 +2,11 @@ package quiz.api.validator;
 
 import jakarta.validation.constraints.*;
 
-import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 
 public class QuestionValidator {
-    @NotEmpty(message = "Pytanie jest wymagane")
+    @NotBlank(message = "Pytanie jest wymagane")
     private String name;
 
     private Set<Integer> answers = Set.of();
@@ -26,4 +26,36 @@ public class QuestionValidator {
     public void setAnswers(Set<Integer> answers) {
         this.answers = answers;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    @NotBlank(message = "typ jest wymagany")
+    private String type;
+
+    @NotNull(message = "Określ czy pytanie jest aktywne!")
+    private Boolean active;
+
+    public Optional<FileAttachment> getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(Optional<FileAttachment> attachment) {
+        this.attachment = attachment;
+    }
+
+    private Optional<FileAttachment> attachment;
 }
