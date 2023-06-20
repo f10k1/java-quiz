@@ -8,7 +8,7 @@
                 <mat-list-item role="listitem">
                     <a routerLink="/questions" mat-flat-button color="link" class="btn-icon">
                         Pytania
-                        <span></span>
+                        <span *ngIf="$questions | async as questions">{{questions.length}}</span>
                         <mat-icon aria-hidden="false" aria-label="Pytania" fontIcon="question_mark"></mat-icon>
                     </a>
                 </mat-list-item>
@@ -19,7 +19,7 @@
                     </a>
                 </mat-list-item>
                 <mat-list-item role="listitem">
-                    <a routerLink="/questions" mat-flat-button>
+                    <a routerLink="/questions" mat-flat-button class="btn-icon">
                         Oceny
                         <mat-icon aria-hidden="false" aria-label="Wyślij" fontIcon="school"></mat-icon>
                     </a>

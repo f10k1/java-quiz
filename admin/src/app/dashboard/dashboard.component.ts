@@ -11,7 +11,7 @@ import Question from '../core/types/question.interface';
 })
 export class DashboardComponent implements OnInit {
 
-    private $questions: Observable<Question[]> = this._questionService.questions;
+    public $questions: Observable<Question[]> = this._questionService.questions;
 
     constructor(private _authService: AuthService, private _questionService: QuestionService) { };
 
