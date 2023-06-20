@@ -64,8 +64,8 @@ public class QuestionController {
             newQuestion.setActive(request.getActive());
 
 
-            if(!request.getAttachment().isEmpty()){
-                String encodedImg = request.getAttachment().get().url.split(",")[1];
+            if(request.getAttachment() != null){
+                String encodedImg = request.getAttachment().url.split(",")[1];
                 byte[] decodedFile = Base64.getDecoder().decode(encodedImg.getBytes(StandardCharsets.UTF_8));
                 Path uploadPath = Paths.get("attachments");
 
@@ -73,14 +73,14 @@ public class QuestionController {
                     Files.createDirectories(uploadPath);
                 }
                 try (InputStream inputStream = new ByteArrayInputStream(decodedFile)) {
-                    String fileName = request.getAttachment().get().name;
+                    String fileName = request.getAttachment().name;
                     String code = UUID.randomUUID().toString().replace("-", "");
                     Path filePath = uploadPath.resolve( code + fileName);
                     Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
                     newQuestion.setFile(code + fileName);
                     newQuestion.setFileName(fileName);
                 } catch (IOException ioe) {
-                    throw new IOException("Could not save file: " + request.getAttachment().get().name, ioe);
+                    throw new IOException("Could not save file: " + request.getAttachment().name, ioe);
                 }
             }
 
@@ -97,5 +97,10 @@ public class QuestionController {
             return ResponseEntity.internalServerError().body(err.getMessage());
         }
 
+    }
+
+    @PatchMapping("/{id}")
+    public @ResponseBody ResponseEntity<?> editQuestion(@PathVariable Integer id, @Valid @RequestBody QuestionValidator request) {
+        return ResponseEntity.ok().build();
     }
 }

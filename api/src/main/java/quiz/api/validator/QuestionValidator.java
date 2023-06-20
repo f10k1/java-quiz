@@ -49,13 +49,13 @@ public class QuestionValidator {
     @NotNull(message = "Określ czy pytanie jest aktywne!")
     private Boolean active;
 
-    public Optional<FileAttachment> getAttachment() {
+    public FileAttachment getAttachment() {
         return attachment;
     }
 
-    public void setAttachment(Optional<FileAttachment> attachment) {
+    public void setAttachment(FileAttachment attachment) {
         this.attachment = attachment;
     }
 
-    private Optional<FileAttachment> attachment;
+    private FileAttachment attachment;
 }
