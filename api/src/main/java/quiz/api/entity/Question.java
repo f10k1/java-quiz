@@ -1,5 +1,8 @@
 package quiz.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import quiz.api.enums.QUESTION_TYPES;
@@ -11,8 +14,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Set;
 
+@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="question_id")
 @Entity
 public class Question {
 
@@ -70,8 +75,25 @@ public class Question {
     @Enumerated(value = EnumType.STRING)
     private QUESTION_TYPES type = QUESTION_TYPES.ONE_CHOICE;
 
-    @OneToMany(mappedBy = "question", orphanRemoval = true)
-    private Set<Answer> answers;
+    @ManyToMany(
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST}
+    )
+    @JoinTable(
+            name = "questions_answers",
+            joinColumns = @JoinColumn(name = "answer_id"),
+            inverseJoinColumns = @JoinColumn(name = "question_id")
+    )
+    private Set<Answer> answers = new HashSet<Answer>();
+
+    public void addAnswer(Answer answer){
+        this.answers.add(answer);
+        answer.getQuestions().add(this);
+    }
+
+    public void removeAnswer(Answer answer){
+        this.answers.remove(answer);
+        answer.getQuestions().remove(this);
+    }
 
     public QUESTION_TYPES getType() {
         return type;
@@ -84,13 +106,22 @@ public class Question {
     public String getFile() throws IOException {
 
         if (this.file == null ||this.file.isEmpty()) return null;
+        try{
+            Path uploadPath = Paths.get("attachments");
+            InputStream is = new FileInputStream(uploadPath+"/"+this.file);
+            BufferedInputStream in = new BufferedInputStream(is);
+            String url = new String(in.readAllBytes(), StandardCharsets.US_ASCII);
+            is.close();
+            in.close();
+            return url;
+        }
+        catch (Exception err){
+            return "";
+        }
+    }
 
-        Path uploadPath = Paths.get("attachments");
-        InputStream is = new FileInputStream(uploadPath+"/"+this.file);
-        BufferedInputStream in = new BufferedInputStream(is);
-        String url = new String(in.readAllBytes(), StandardCharsets.US_ASCII);
-
-        return url;
+    public String getFileCode(){
+        return this.file;
     }
 
     public void setFile(String file) {

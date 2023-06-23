@@ -6,7 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 public class User {
@@ -24,7 +24,7 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user")
-    private Set<Score> score;
+    private List<Score> score;
 
     public String getName() {
         return name;

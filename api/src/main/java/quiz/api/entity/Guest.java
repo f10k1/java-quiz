@@ -3,7 +3,7 @@ package quiz.api.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 public class Guest {
@@ -15,5 +15,5 @@ public class Guest {
     private String name;
 
     @OneToMany(mappedBy = "guest")
-    private Set<Score> score;
+    private List<Score> score;
 }

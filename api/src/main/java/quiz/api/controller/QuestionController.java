@@ -48,59 +48,130 @@ public class QuestionController {
         return questionRepository.findById(id);
     }
 
-    @PostMapping(path="/")
+    @PutMapping(path="/")
     public @ResponseBody ResponseEntity<?> addNewQuestion(@Valid @RequestBody QuestionValidator request){
-        try {
-            Question newQuestion = new Question();
-            newQuestion.setName(request.getName());
+        if (request.getId() == null){
+            try {
+                Question newQuestion = new Question();
+                newQuestion.setName(request.getName());
+
+                try{
+                    newQuestion.setType(QUESTION_TYPES.valueOf(request.getType()));
+                }
+                catch(IllegalArgumentException err){
+                    return ResponseEntity.badRequest().build();
+                }
+
+                newQuestion.setActive(request.getActive());
+
+
+                if(request.getAttachment() != null){
+                    createFile(request, newQuestion);
+                }
+
+                if (request.getAnswers() == null) {
+                    Iterable<Answer> answers = answerRepository.findAllById(request.getAnswers());
+                }
+                Set<Answer> answers = Set.of();
+
+                answerRepository.findAllById(request.getAnswers()).forEach(answers::add);
+
+                newQuestion.setAnswers(answers);
+
+                Question question = questionRepository.save(newQuestion);
+
+                return ResponseEntity.ok().body(question);
+            }
+            catch (Exception err){
+                return ResponseEntity.internalServerError().body(err.getMessage());
+            }
+        }
+        else{
+            Optional<Question> question = questionRepository.findById(request.getId());
+            if (question.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
             try{
-                newQuestion.setType(QUESTION_TYPES.valueOf(request.getType()));
+                question.get().setActive(request.getActive());
+                question.get().setName(request.getName());
+                question.get().setType(QUESTION_TYPES.valueOf(request.getType()));
+
+                Iterable<Answer> answerIterable = answerRepository.findAllById(request.getAnswers());
+                answerIterable.forEach((answer) -> question.get().addAnswer(answer));
+
+
             }
             catch(IllegalArgumentException err){
                 return ResponseEntity.badRequest().build();
             }
-
-            newQuestion.setActive(request.getActive());
-
-
-            if(request.getAttachment() != null){
-                String encodedImg = request.getAttachment().url.split(",")[1];
-                byte[] decodedFile = Base64.getDecoder().decode(encodedImg.getBytes(StandardCharsets.UTF_8));
-                Path uploadPath = Paths.get("attachments");
-
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
+            try{
+                if(request.getAttachment() == null && question.get().getFileName() != null){
+                    deleteFile(question.get());
                 }
-                try (InputStream inputStream = new ByteArrayInputStream(decodedFile)) {
-                    String fileName = request.getAttachment().name;
-                    String code = UUID.randomUUID().toString().replace("-", "");
-                    Path filePath = uploadPath.resolve( code + fileName);
-                    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-                    newQuestion.setFile(code + fileName);
-                    newQuestion.setFileName(fileName);
-                } catch (IOException ioe) {
-                    throw new IOException("Could not save file: " + request.getAttachment().name, ioe);
+                else if(request.getAttachment() != null && question.get().getFileName() == null) {
+                    createFile(request, question.get());
+                }
+
+                else if(request.getAttachment() != null && question.get().getFileName() != null){
+                    deleteFile(question.get());
+                    createFile(request, question.get());
                 }
             }
-
-            if (!request.getAnswers().isEmpty()) {
-                Iterable<Answer> answers = answerRepository.findAllById(request.getAnswers());
-                newQuestion.setAnswers((Set<Answer>)answers);
+            catch (Exception err){
+                return ResponseEntity.internalServerError().body(err.getMessage());
             }
 
-            Question question = questionRepository.save(newQuestion);
+            questionRepository.save(question.get());
 
-            return ResponseEntity.ok().body(question);
-        }
-        catch (Exception err){
-            return ResponseEntity.internalServerError().body(err.getMessage());
+            return ResponseEntity.ok().body(question.get());
         }
 
     }
 
-    @PatchMapping("/{id}")
-    public @ResponseBody ResponseEntity<?> editQuestion(@PathVariable Integer id, @Valid @RequestBody QuestionValidator request) {
-        return ResponseEntity.ok().build();
+    private void deleteFile(Question question) throws Exception{
+        Path uploadPath = Paths.get("attachments");
+        File file = new File(uploadPath.resolve(question.getFileCode()).toAbsolutePath().toString());
+        if(file.exists() && file.delete()){
+            question.setFile(null);
+            question.setFileName(null);
+        }
+    }
+
+    private void createFile(QuestionValidator request, Question question) throws IOException{
+        Path uploadPath = Paths.get("attachments");
+        String encodedImg = request.getAttachment().url.split(",")[1];
+        byte[] decodedFile = Base64.getDecoder().decode(encodedImg.getBytes(StandardCharsets.UTF_8));
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+        try (InputStream inputStream = new ByteArrayInputStream(decodedFile)) {
+            String fileName = request.getAttachment().name;
+            String code = UUID.randomUUID().toString().replace("-", "");
+            Path filePath = uploadPath.resolve(code + fileName);
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            inputStream.close();
+            question.setFile(code + fileName);
+            question.setFileName(fileName);
+        } catch (IOException ioe) {
+            throw new IOException("Could not save file: " + request.getAttachment().name, ioe);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public @ResponseBody ResponseEntity<?> deleteQuestion(@PathVariable Integer id) {
+        try{
+            Optional<Question> question = questionRepository.findById(id);
+            if (question.isEmpty()) return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+            if (question.get().getFileCode() != null){
+                deleteFile(question.get());
+            }
+
+            questionRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception err) {
+            return ResponseEntity.internalServerError().body(err.getMessage());
+        }
     }
 }

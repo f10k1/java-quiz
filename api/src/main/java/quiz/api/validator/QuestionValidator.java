@@ -2,14 +2,21 @@ package quiz.api.validator;
 
 import jakarta.validation.constraints.*;
 
-import java.util.Optional;
-import java.util.Set;
-
 public class QuestionValidator {
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    private Integer id;
     @NotBlank(message = "Pytanie jest wymagane")
     private String name;
 
-    private Set<Integer> answers = Set.of();
+    private Iterable<Integer> answers;
 
     public String getName() {
         return name;
@@ -19,11 +26,11 @@ public class QuestionValidator {
         this.name = username;
     }
 
-    public Set<Integer> getAnswers() {
+    public Iterable<Integer> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(Set<Integer> answers) {
+    public void setAnswers(Iterable<Integer> answers) {
         this.answers = answers;
     }
 
