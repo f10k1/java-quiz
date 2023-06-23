@@ -16,66 +16,64 @@ export class QuestionService {
 
     constructor(private _httpClient: HttpClient, private _systemService: SystemService) { }
 
-    public getAllQuestions(): void {
-        this._httpClient.get<Question[]>('question/all').pipe(map((value: any) => {
-            return value.map((question: any) => {
-                if (!question.file) return question;
-                const newQuestion = {
-                    ...question, attachment: {
-                        name: question.fileName,
-                        url: question.file
-                    }
-                };
-                delete newQuestion.fileName;
-                delete newQuestion.file;
-                return newQuestion;
-            });
+    private alterReturnedQuestion(question: any) {
+        if (!question.file) return question;
+        const newQuestion = {
+            ...question, attachment: {
+                name: question.fileName,
+                url: question.file
+            }
+        };
+        delete newQuestion.fileName;
+        delete newQuestion.file;
+        return newQuestion;
+    }
 
-        })).subscribe((res: Question[]) => {
+    public getAllQuestions(): void {
+        this._httpClient.get<Question[]>('question/all').pipe(map(this.alterReturnedQuestion)).subscribe((res: Question[]) => {
             this.$questions.next(res);
         });
     }
 
-    public addQuestion(data: Omit<Question, "id">): void {
+    public saveQuestion(data: Omit<Question, "id">): void {
         this._systemService.addLoading("question-sent");
         this._systemService.addFlag({ "QUESTION_REQUEST": "SENT" });
-        setTimeout(() => {
-            this._httpClient.post<Question>('question/', data).subscribe(
-                {
-                    next: (res: Question) => {
-                        this._systemService.removeLoading("question-sent");
-                        this._systemService.patchFlag("QUESTION_REQUEST", "SUCCESS");
-                        this.$questions.next([...this.$questions.getValue(), res]);
-                    },
-                    error: (err: any) => {
-                        this._systemService.removeLoading("question-sent");
-                        this._systemService.patchFlag("QUESTION_REQUEST", "ERROR");
-                        this._systemService.addNotification({
-                            content: "Coś poszło nie tak podczas łączenia z serwerem",
-                            action: "ok",
-                            type: NOTIFICATION_TYPES.ERROR
-                        });
-                    }
-                });
-        }, 1000)
-
-    };
-
-
-    public editQuestion(id: number, data: Partial<Question>): void {
-        this._systemService.addLoading("question-sent");
-        this._systemService.addFlag({ "QUESTION_REQUEST": "SENT" });
-        console.log(data)
-        this._httpClient.patch<Question>(`question/${id}`, data).subscribe(
+        this._httpClient.put<Question>('question/', data).pipe(map(this.alterReturnedQuestion)).subscribe(
             {
                 next: (res: Question) => {
-                    let oldValue = this.$questions.getValue().find((value) => {
-                        value.id == id;
-                    });
-                    oldValue = res;
                     this._systemService.removeLoading("question-sent");
                     this._systemService.patchFlag("QUESTION_REQUEST", "SUCCESS");
-                    this.$questions.next([...this.$questions.getValue(), oldValue]);
+                    if ((data as Question).id) {
+                        let value: Question[] = this.$questions.getValue().map((question) => {
+                            if (question.id != (data as Question).id) return question;
+                            return res;
+                        });
+                        this.$questions.next([...value]);
+                    }
+                    else this.$questions.next([...this.$questions.getValue(), res]);
+                },
+                error: (err: any) => {
+                    this._systemService.removeLoading("question-sent");
+                    this._systemService.patchFlag("QUESTION_REQUEST", "ERROR");
+                    this._systemService.addNotification({
+                        content: "Coś poszło nie tak podczas łączenia z serwerem",
+                        action: "ok",
+                        type: NOTIFICATION_TYPES.ERROR
+                    });
+                }
+            });
+    };
+
+    public deleteQuestion(id: number): void {
+        this._systemService.addLoading("question-sent");
+        this._systemService.addFlag({ "QUESTION_REQUEST": "SENT" });
+        this._httpClient.delete<Question>(`question/${id}`,).subscribe(
+            {
+                next: (res: Question) => {
+                    let value = this.$questions.getValue().filter((value) => value.id != id);
+                    this._systemService.removeLoading("question-sent");
+                    this._systemService.patchFlag("QUESTION_REQUEST", "SUCCESS");
+                    this.$questions.next([...value]);
                 },
                 error: (err: any) => {
                     this._systemService.removeLoading("question-sent");

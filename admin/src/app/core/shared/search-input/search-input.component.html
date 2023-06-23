@@ -1,0 +1,39 @@
+<div>
+    <form class="search-input" [formGroup]="form">
+        <mat-form-field class="example-full-width">
+            <mat-label>{{label}}</mat-label>
+            <input matInput formControlName="searchString">
+        </mat-form-field>
+        <div class="search-input__checked" *ngIf="pickedItems">
+            <mat-list role="list">
+                <div mat-subheader>Wybrane</div>
+                <ng-template ngFor let-item [ngForOf]="pickedItems" let-i="index" [ngForTrackBy]="trackByResult">
+                    <mat-list-item formArrayName="picked" role="listitem">
+                        <mat-checkbox [formControlName]="i">
+                            {{item[display]}}
+                        </mat-checkbox>
+                    </mat-list-item>
+                </ng-template>
+            </mat-list>
+        </div>
+        <div class="search-input__suggester" *ngIf="form.get('searchString')?.value != '' && searchResult">
+            <mat-list role="list">
+                <div mat-subheader>Wyniki</div>
+                <ng-container *ngIf="searchResult.length; else noResults">
+                    <ng-template ngFor let-item [ngForOf]="searchResult" let-i="index" [ngForTrackBy]="trackByResult">
+                        <mat-list-item formArrayName="suggesters" role="listitem">
+                            <mat-checkbox [formControlName]="i">
+                                {{item[display]}}
+                            </mat-checkbox>
+                        </mat-list-item>
+                    </ng-template>
+                </ng-container>
+                <ng-template #noResults>
+                    <mat-list-item role="text">
+                        Brak wyników!
+                    </mat-list-item>
+                </ng-template>
+            </mat-list>
+        </div>
+    </form>
+</div>

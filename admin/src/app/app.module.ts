@@ -20,6 +20,7 @@ import { CustomErrorHandler } from './core/custom-error-handler';
 import { LoginComponent } from './login/login.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { SearchInputComponent } from './core/shared/search-input/search-input.component';
 
 @NgModule({
     declarations: [

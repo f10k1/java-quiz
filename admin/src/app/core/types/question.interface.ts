@@ -3,7 +3,7 @@ import Answer from "./answer.interface";
 export default interface Question {
     id: number,
     name: string,
-    answers?: Answer[],
+    answers?: number[],
     active: boolean,
     type: QUESTION_TYPES,
     attachment?: {

@@ -20,6 +20,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AnswersComponent } from './answers/answers.component';
+import { AnswerComponent } from './answers/answer/answer.component';
+import { SearchInputComponent } from '../core/shared/search-input/search-input.component';
+import { SharedModule } from '../core/shared/shared.module';
 
 @NgModule({
     declarations: [
@@ -27,7 +31,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         QuestionsComponent,
         QuestionTypeToText,
         QuestionComponent,
-
+        AnswersComponent,
+        AnswerComponent
     ],
     imports: [
         CommonModule,
@@ -46,7 +51,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         MatInputModule,
         MatRadioModule,
         MatSlideToggleModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        SharedModule
     ],
     exports: [
         DashboardComponent

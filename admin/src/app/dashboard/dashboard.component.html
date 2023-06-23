@@ -6,20 +6,30 @@
                     <span matListItemTitle>Panel sterowania</span>
                 </mat-list-item>
                 <mat-list-item role="listitem">
-                    <a routerLink="/questions" mat-flat-button color="link" class="btn-icon">
+                    <a routerLink="/questions" routerLinkActive="mat-accent" mat-flat-button color="link"
+                        class="btn-icon">
                         Pytania
-                        <span *ngIf="$questions | async as questions">{{questions.length}}</span>
+
+                        <span *ngIf="$questions | async as questions" class="custom-badge">{{questions.length}}</span>
                         <mat-icon aria-hidden="false" aria-label="Pytania" fontIcon="question_mark"></mat-icon>
                     </a>
                 </mat-list-item>
                 <mat-list-item role="listitem">
-                    <a routerLink="/questions" mat-flat-button class="btn-icon">
+                    <a routerLink="/answers" routerLinkActive="mat-accent"
+                        mat-flat-button class="btn-icon">
+                        Odpowiedzi
+                        <mat-icon aria-hidden="false" aria-label="Wyniki" fontIcon="check_box"></mat-icon>
+                    </a>
+                </mat-list-item>
+                <mat-list-item role="listitem">
+                    <a routerLink="/scores" routerLinkActive="mat-accent"
+                        mat-flat-button class="btn-icon">
                         Wyniki
                         <mat-icon aria-hidden="false" aria-label="Wyniki" fontIcon="scoreboard"></mat-icon>
                     </a>
                 </mat-list-item>
                 <mat-list-item role="listitem">
-                    <a routerLink="/questions" mat-flat-button class="btn-icon">
+                    <a routerLink="/marks" routerLinkActive="mat-accent" mat-flat-button class="btn-icon">
                         Oceny
                         <mat-icon aria-hidden="false" aria-label="Wyślij" fontIcon="school"></mat-icon>
                     </a>

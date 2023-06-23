@@ -1,18 +1,1 @@
-.questions-table {
-    .mat-mdc-row {
-        .mat-mdc-cell {
-            cursor: pointer;
-            transition: 0.4s filter;
-        }
-        &:hover .mat-mdc-cell {
-            filter: brightness(1.5);
-        }
-    }
-}
-mat-toolbar{
-    padding: 10px 0;
-}
-mat-paginator {
-    background-color: transparent;
-    margin-left: auto;
-}
+

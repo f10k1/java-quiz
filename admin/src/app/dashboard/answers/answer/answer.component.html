@@ -1,0 +1,44 @@
+<h4 mat-dialog-title *ngIf="!data; else editText">Nowa odpowiedź</h4>
+<ng-template #editText>
+    <h4 mat-dialog-title>Edytujesz pytanie: {{data.title}}</h4>
+</ng-template>
+<div mat-dialog-content>
+    <form [formGroup]="form" (ngSubmit)="saveAnswer()">
+        <div>
+            <mat-slide-toggle formControlName="correct">Odpowiedź poprawna</mat-slide-toggle>
+        </div>
+        <mat-form-field>
+            <mat-label>Odpowiedź</mat-label>
+            <input matInput formControlName="title">
+        </mat-form-field>
+        <div formGroupName="questions">
+
+        </div>
+        <div style="display: flex;">
+            <button type="submit" mat-raised-button color="accent" class="btn-center"
+                [disabled]="!form.valid || answerSentLoading || data && !form.dirty">
+                <mat-spinner style="width: 30px; height: 30px;"
+                    *ngIf="answerSentLoading; else buttonText"></mat-spinner>
+                <ng-template #buttonText>
+                    <div class="btn-icon">
+                        Zapisz
+                        <mat-icon fontIcon="save"></mat-icon>
+                    </div>
+                </ng-template>
+            </button>
+            <button type="button" mat-raised-button color="warn" class="btn-center" *ngIf="data" style="margin-left: 10px;"
+                [disabled]="answerSentLoading" (click)="deleteAnswer()">
+                <mat-spinner style="width: 30px; height: 30px;"
+                    *ngIf="answerSentLoading; else deleteIcon"></mat-spinner>
+                <ng-template #deleteIcon>
+                    <div class="btn-icon">
+                        Usuń
+                        <mat-icon fontIcon="delete"></mat-icon>
+                    </div>
+
+                </ng-template>
+            </button>
+        </div>
+
+    </form>
+</div>

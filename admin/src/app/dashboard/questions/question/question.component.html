@@ -1,4 +1,7 @@
-<h4 mat-dialog-title>Nowe pytanie</h4>
+<h4 mat-dialog-title *ngIf="!data; else editText">Nowe pytanie</h4>
+<ng-template #editText>
+    <h4 mat-dialog-title>Edytujesz pytanie: {{data.name}}</h4>
+</ng-template>
 <div mat-dialog-content>
     <form [formGroup]="form" (ngSubmit)="saveQuestion()">
         <div>
@@ -22,20 +25,40 @@
             <button type="button" mat-raised-button (click)="fileInput.click()">Choose File</button>
             <input hidden (change)="fileSelected()" #fileInput type="file">
             <div *ngIf="attachmentFile" style="padding: 20px 0 0; display: flex; align-items: center; gap: 10px;">
-                <button mat-icon-button color="warn" (click)="removeFile()">
+                <button mat-icon-button color="warn" type="button" (click)="removeFile()">
                     <mat-icon fontIcon="close"></mat-icon>
                 </button>
-                    Wybrany plik: {{attachmentFile?.name}}
+                Wybrany plik: {{attachmentFile?.name}}
             </div>
         </div>
-        <div formGroupName="answers">
-
+        <div *ngIf="form.get('type')?.value != QUESTION_TYPES.TRUE_FALSE">
+            <app-search-input label="Wyszukaj odpowiedzi" [searchFunc]="searchForAnswers" display="title" [pickedByDefault]="data.answers ?? []" (pickedItemsChanged)="(updatePickedAnswers($event))"></app-search-input>
         </div>
-        <button type="submit" mat-raised-button color="accent" [disabled]="!form.valid || questionSentLoading">
-            <mat-spinner style="width: 30px; height: 30px;" *ngIf="questionSentLoading; else buttonText"></mat-spinner>
-            <ng-template #buttonText>
-                Zapisz
-            </ng-template>
-        </button>
+        <div style="display: flex;">
+            <button type="submit" mat-raised-button color="accent" class="btn-center"
+                [disabled]="!form.valid || questionSentLoading || data && !form.dirty">
+                <mat-spinner style="width: 30px; height: 30px;"
+                    *ngIf="questionSentLoading; else buttonText"></mat-spinner>
+                <ng-template #buttonText>
+                    <div class="btn-icon">
+                        Zapisz
+                        <mat-icon fontIcon="save"></mat-icon>
+                    </div>
+                </ng-template>
+            </button>
+            <button type="button" mat-raised-button color="warn" class="btn-center" *ngIf="data"
+                [disabled]="questionSentLoading" (click)="deleteQuestion()">
+                <mat-spinner style="width: 30px; height: 30px;"
+                    *ngIf="questionSentLoading; else deleteIcon"></mat-spinner>
+                <ng-template #deleteIcon>
+                    <div class="btn-icon">
+                        Usuń
+                        <mat-icon fontIcon="delete"></mat-icon>
+                    </div>
+
+                </ng-template>
+            </button>
+        </div>
+
     </form>
 </div>
