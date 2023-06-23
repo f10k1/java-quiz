@@ -11,7 +11,8 @@ export class CustomErrorHandler implements ErrorHandler {
         this._systemService.addNotification({
             type: NOTIFICATION_TYPES.ERROR,
             content: "Wystąpił błąd spróbuj ponownie później.",
-            action: "ok"
+            action: "ok",
+            timespan: 5000
         });
     }
 }
