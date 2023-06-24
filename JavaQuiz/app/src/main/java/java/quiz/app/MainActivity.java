@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
             username.setAnimation(shake);
             return;
         }else{
-
             intent.putExtra("username", username.getText().toString());
             startActivity(intent);
             finish();

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -16,17 +17,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 
 public class QuestionsActivity extends AppCompatActivity {
 
@@ -140,7 +138,6 @@ public class QuestionsActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_questions);
 
-        TextView questionTextBox = (TextView) findViewById(R.id.question);
         ActionBar actionBar = getSupportActionBar();
 
         actionBar.setTitle("Witaj "+getIntent().getStringExtra("username"));
@@ -208,24 +205,25 @@ public class QuestionsActivity extends AppCompatActivity {
         try {
             JSONObject currentQuestion = questions.getJSONObject(questionNumber - 1);
             String type = currentQuestion.getString("type");
-
+            ArrayList<Integer> answer = new ArrayList<Integer>();
             if (type.equals("ONE_CHOICE")) {
                 Integer radio = radioGroup.getCheckedRadioButtonId();
-                selectedAnswers.put(new JSONObject().put("question",currentQuestion.getString("id")));
-                selectedAnswers.put(new JSONObject().put("answers",radio));
+                answer.add(radio);
             } else if (type.equals("MULTI_CHOICE")) {
-                ArrayList<Integer> answers = new ArrayList<Integer>();
-
                 for (Integer index = 0; index < checkboxes.getChildCount(); index++) {
                     CheckBox checkBox = (CheckBox) checkboxes.getChildAt(index);
                     System.out.println("");
                     if (checkBox.isChecked()) {
-                        answers.add(checkBox.getId());
+                        answer.add(checkBox.getId());
                     }
                 }
-                selectedAnswers.put(new JSONObject().put("question",currentQuestion.getString("id")));
-                selectedAnswers.put(new JSONObject().put("answers",answers));
             }
+            JSONObject answerObj = new JSONObject();
+            answerObj.put("questionId",currentQuestion.getString("id"));
+            answerObj.put("answersId",new JSONArray(answer));
+
+            selectedAnswers.put(answerObj);
+
         }
         catch (Exception err){
             System.out.println(err.getMessage());
@@ -233,7 +231,12 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
     public void saveQuestions(View view){
+        Intent intent = new Intent(this, ScoreActivity.class);
         selectAnswer();
         System.out.println(selectedAnswers.toString());
+
+        intent.putExtra("answers", selectedAnswers.toString());
+        startActivity(intent);
+        finish();
     }
 }
