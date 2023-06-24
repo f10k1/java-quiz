@@ -9,9 +9,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.JavaQuiz">
         <activity
-            android:name=".Questions"
+            android:name=".QuestionsActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
