@@ -30,7 +30,7 @@ export class QuestionService {
     }
 
     public getAllQuestions(): void {
-        this._httpClient.get<Question[]>('question/all').pipe(map(this.alterReturnedQuestion)).subscribe((res: Question[]) => {
+        this._httpClient.get<Question[]>('api/question/all').pipe(map((data => data.map(this.alterReturnedQuestion)))).subscribe((res: Question[]) => {
             this.$questions.next(res);
         });
     }
@@ -38,7 +38,7 @@ export class QuestionService {
     public saveQuestion(data: Omit<Question, "id">): void {
         this._systemService.addLoading("question-sent");
         this._systemService.addFlag({ "QUESTION_REQUEST": "SENT" });
-        this._httpClient.put<Question>('question/', data).pipe(map(this.alterReturnedQuestion)).subscribe(
+        this._httpClient.put<Question>('api/question/', data).pipe(map(this.alterReturnedQuestion)).subscribe(
             {
                 next: (res: Question) => {
                     this._systemService.removeLoading("question-sent");
@@ -67,7 +67,7 @@ export class QuestionService {
     public deleteQuestion(id: number): void {
         this._systemService.addLoading("question-sent");
         this._systemService.addFlag({ "QUESTION_REQUEST": "SENT" });
-        this._httpClient.delete<Question>(`question/${id}`,).subscribe(
+        this._httpClient.delete<Question>(`api/question/${id}`,).subscribe(
             {
                 next: (res: Question) => {
                     let value = this.$questions.getValue().filter((value) => value.id != id);

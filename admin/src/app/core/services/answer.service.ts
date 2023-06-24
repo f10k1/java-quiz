@@ -17,7 +17,7 @@ export class AnswerService {
     constructor(private _httpClient: HttpClient, private _systemService: SystemService) { }
 
     public getAllAnswers(): void {
-        this._httpClient.get<Answer[]>('answer/all').subscribe((res: Answer[]) => {
+        this._httpClient.get<Answer[]>('api/answer/all').subscribe((res: Answer[]) => {
             this.$answers.next(res);
         });
     }
@@ -25,7 +25,7 @@ export class AnswerService {
     public saveAnswer(data: Omit<Answer, "id">): void {
         this._systemService.addLoading("answer-sent");
         this._systemService.addFlag({ "ANSWER_REQUEST": "SENT" });
-        this._httpClient.put<Answer>('answer/', data).subscribe(
+        this._httpClient.put<Answer>('api/answer/', data).subscribe(
             {
                 next: (res: Answer) => {
                     this._systemService.removeLoading("answer-sent");
@@ -54,7 +54,7 @@ export class AnswerService {
     public deleteAnswer(id: number): void {
         this._systemService.addLoading("answer-sent");
         this._systemService.addFlag({ "answer_REQUEST": "SENT" });
-        this._httpClient.delete<Answer>(`answer/${id}`,).subscribe(
+        this._httpClient.delete<Answer>(`api/answer/${id}`,).subscribe(
             {
                 next: (res: Answer) => {
                     let value = this.$answers.getValue().filter((value) => value.id != id);
