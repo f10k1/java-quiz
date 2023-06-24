@@ -1,23 +1,20 @@
 package quiz.api.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import quiz.api.enums.QUESTION_TYPES;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
-@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="question_id")
+
 @Entity
 public class Question {
 
@@ -52,6 +49,7 @@ public class Question {
         this.name = name;
     }
 
+    @JsonIgnoreProperties("questions")
     public Set<Answer> getAnswers() {
         return answers;
     }
@@ -76,12 +74,13 @@ public class Question {
     private QUESTION_TYPES type = QUESTION_TYPES.ONE_CHOICE;
 
     @ManyToMany(
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST}
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+            fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "questions_answers",
-            joinColumns = @JoinColumn(name = "answer_id"),
-            inverseJoinColumns = @JoinColumn(name = "question_id")
+            joinColumns = @JoinColumn(name = "question_id"),
+            inverseJoinColumns = @JoinColumn(name = "answer_id")
     )
     private Set<Answer> answers = new HashSet<Answer>();
 
@@ -110,10 +109,16 @@ public class Question {
             Path uploadPath = Paths.get("attachments");
             InputStream is = new FileInputStream(uploadPath+"/"+this.file);
             BufferedInputStream in = new BufferedInputStream(is);
-            String url = new String(in.readAllBytes(), StandardCharsets.US_ASCII);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int read = 0;
+            while ((read = in.read(buffer, 0, buffer.length)) != -1) {
+                baos.write(buffer, 0, read);
+            }
+            baos.flush();
             is.close();
             in.close();
-            return url;
+            return Base64.getUrlEncoder().encodeToString(baos.toByteArray());
         }
         catch (Exception err){
             return "";

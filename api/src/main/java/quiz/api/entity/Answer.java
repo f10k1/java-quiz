@@ -1,8 +1,6 @@
 package quiz.api.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -10,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="answer_id")
+
 @Entity
 public class Answer {
 
@@ -43,6 +41,7 @@ public class Answer {
     }
 
 
+    @JsonIgnoreProperties("answers")
     public Set<Question> getQuestions() {
         return question;
     }
