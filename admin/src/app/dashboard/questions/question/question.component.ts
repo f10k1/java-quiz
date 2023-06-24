@@ -1,10 +1,11 @@
 import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { AnswerService } from 'src/app/core/services/answer.service';
 import { QuestionService } from 'src/app/core/services/question.service';
 import { SystemService } from 'src/app/core/services/system.service';
+import { SearchInputComponent } from 'src/app/core/shared/search-input/search-input.component';
 import Answer from 'src/app/core/types/answer.interface';
 import Question, { QUESTION_TYPES } from 'src/app/core/types/question.interface';
 
@@ -18,6 +19,8 @@ export class QuestionComponent implements OnInit, OnDestroy {
     public QUESTION_TYPES = QUESTION_TYPES;
 
     @ViewChild('fileInput') public fileInput: ElementRef<HTMLInputElement> | null = null;
+
+    @ViewChild(SearchInputComponent) searchInputComponent: SearchInputComponent | null = null;
 
     public form = this._fb.group({
         name: ['', Validators.required],
@@ -35,11 +38,12 @@ export class QuestionComponent implements OnInit, OnDestroy {
     private $answers: Subscription | null = null;
     public answers: Answer[] | null = null;
 
+
     constructor(private _fb: FormBuilder, private _answerService: AnswerService, private _systemService: SystemService, private _questionService: QuestionService, @Inject(MAT_DIALOG_DATA) public data: Question, private _dialogRef: MatDialogRef<QuestionComponent>) {
-        if (data) {
-            this.form.get('name')?.setValue(data.name);
-            this.form.get('type')?.setValue(data.type);
-            this.form.get('active')?.setValue(data.active);
+        if (this.data) {
+            this.form.get('name')?.setValue(this.data.name);
+            this.form.get('type')?.setValue(this.data.type);
+            this.form.get('active')?.setValue(this.data.active);
             this.attachmentFile = this.data.attachment;
         }
     };
@@ -60,6 +64,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
         this.$answers = this._answerService.answers.subscribe((value) => {
             this.answers = value;
         });
+        // this.form.get("type")?.valueChanges.subscribe(() => this.searchInputComponent.reset())
     }
 
     ngOnDestroy(): void {
@@ -120,7 +125,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
     public searchForAnswers = (searchString: string) => {
         return this.answers?.filter(answer => {
             if (this.pickedAnswers.find(picked => picked.id === answer.id)) return false;
-            if (answer.correct && this.data.type == QUESTION_TYPES.ONE_CHOICE && this.pickedAnswers.find(answer => answer.correct)) return false;
+            if (answer.correct && this.data?.type == QUESTION_TYPES.ONE_CHOICE && this.pickedAnswers.find(answer => answer.correct)) return false;
             return answer.title.includes(searchString);
         });
     };

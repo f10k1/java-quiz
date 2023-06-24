@@ -32,7 +32,7 @@
             </div>
         </div>
         <div *ngIf="form.get('type')?.value != QUESTION_TYPES.TRUE_FALSE">
-            <app-search-input label="Wyszukaj odpowiedzi" [searchFunc]="searchForAnswers" display="title" [pickedByDefault]="data.answers ?? []" (pickedItemsChanged)="(updatePickedAnswers($event))"></app-search-input>
+            <app-search-input label="Wyszukaj odpowiedzi" [searchFunc]="searchForAnswers" display="title" [pickedByDefault]="data?.answers ?? []" (pickedItemsChanged)="(updatePickedAnswers($event))"></app-search-input>
         </div>
         <div style="display: flex;">
             <button type="submit" mat-raised-button color="accent" class="btn-center"

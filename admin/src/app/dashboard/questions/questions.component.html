@@ -10,11 +10,9 @@
     <ng-container matColumnDef="answers">
         <th mat-header-cell *matHeaderCellDef> Odpowiedzi </th>
         <td mat-cell *matCellDef="let element">
-            <mat-list>
-                <mat-list-item *ngFor="let answer of element.answers">
-                    {{answer.title}}
-                </mat-list-item>
-            </mat-list>
+            <div style="display: flex; flex-wrap: wrap; gap:10px;">
+                <span *ngFor="let answer of element.answers">{{answer.title}}</span>
+            </div>
         </td>
     </ng-container>
     <ng-container matColumnDef="attachment">
@@ -34,8 +32,7 @@
             <mat-icon fontIcon="add"></mat-icon>
             Dodaj nowe pytanie
         </button>
-        <mat-paginator color="primary" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
-            aria-label="Wybierz stronę">
+        <mat-paginator color="primary" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Wybierz stronę">
         </mat-paginator>
     </mat-toolbar-row>
 </mat-toolbar>

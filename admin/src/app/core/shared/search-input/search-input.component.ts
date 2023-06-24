@@ -32,6 +32,7 @@ export class SearchInputComponent implements OnInit {
     constructor(private _fb: FormBuilder) { }
 
     ngOnInit(): void {
+        this.pickedByDefault.forEach((value) => this.addToPicked(value));
         this.$pickedItems = this.form.controls.picked.valueChanges.subscribe((values) => {
             const index = values.findIndex(value => value === false);
             if (index === -1) return;
@@ -43,7 +44,6 @@ export class SearchInputComponent implements OnInit {
         this.$value = this.form.get("searchString")?.valueChanges.pipe(debounceTime(1000)).subscribe((value) => {
             this.search(value);
         });
-        this.pickedByDefault.forEach((value) => this.addToPicked(value))
     }
 
     private search = (value: any) => {
