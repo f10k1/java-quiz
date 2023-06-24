@@ -24,7 +24,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @RestController
-@RequestMapping(path = "/question")
+@RequestMapping(path = "/api/question")
 public class QuestionController {
 
     @Autowired
@@ -69,14 +69,9 @@ public class QuestionController {
                     createFile(request, newQuestion);
                 }
 
-                if (request.getAnswers() == null) {
-                    Iterable<Answer> answers = answerRepository.findAllById(request.getAnswers());
+                if (request.getAnswers() != null) {
+                    answerRepository.findAllById(request.getAnswers()).forEach((answer) -> newQuestion.addAnswer(answer));
                 }
-                Set<Answer> answers = Set.of();
-
-                answerRepository.findAllById(request.getAnswers()).forEach(answers::add);
-
-                newQuestion.setAnswers(answers);
 
                 Question question = questionRepository.save(newQuestion);
 
@@ -94,10 +89,9 @@ public class QuestionController {
                 question.get().setActive(request.getActive());
                 question.get().setName(request.getName());
                 question.get().setType(QUESTION_TYPES.valueOf(request.getType()));
-
-                Iterable<Answer> answerIterable = answerRepository.findAllById(request.getAnswers());
-                answerIterable.forEach((answer) -> question.get().addAnswer(answer));
-
+                if (request.getAnswers() != null){
+                    answerRepository.findAllById(request.getAnswers()).forEach((answer) -> question.get().addAnswer(answer));
+                }
 
             }
             catch(IllegalArgumentException err){
@@ -111,7 +105,7 @@ public class QuestionController {
                     createFile(request, question.get());
                 }
 
-                else if(request.getAttachment() != null && question.get().getFileName() != null){
+                else if(request.getAttachment() != null && question.get().getFileName() != null && request.getAttachment().url != question.get().getFile()){
                     deleteFile(question.get());
                     createFile(request, question.get());
                 }
@@ -138,8 +132,15 @@ public class QuestionController {
 
     private void createFile(QuestionValidator request, Question question) throws IOException{
         Path uploadPath = Paths.get("attachments");
-        String encodedImg = request.getAttachment().url.split(",")[1];
-        byte[] decodedFile = Base64.getDecoder().decode(encodedImg.getBytes(StandardCharsets.UTF_8));
+        String encodedFile;
+        String[] splitUrl = request.getAttachment().url.split(",");
+        if (splitUrl.length > 1){
+            encodedFile = splitUrl[1];
+        }
+        else{
+            encodedFile = request.getAttachment().url;
+        }
+        byte[] decodedFile = Base64.getDecoder().decode(encodedFile.getBytes(StandardCharsets.UTF_8));
 
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);

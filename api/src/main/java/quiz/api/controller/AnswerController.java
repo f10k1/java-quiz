@@ -14,7 +14,7 @@ import quiz.api.validator.AnswerValidator;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "/answer")
+@RequestMapping(path = "/api/answer")
 public class AnswerController {
 
     @Autowired
