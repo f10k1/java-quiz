@@ -18,10 +18,10 @@ import java.util.concurrent.Executor;
 import javax.net.ssl.HttpsURLConnection;
 
 public class QuestionService {
-    private final String baseUrl = "https://jsonplaceholder.typicode.com";
+    private final String baseUrl = "http://10.0.2.2:8090";
 
     String getQuestions() throws IOException {
-        URL url = new URL(baseUrl+"/posts");
+        URL url = new URL(baseUrl+"/public/questions?limit=10");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
         urlConnection.connect();
