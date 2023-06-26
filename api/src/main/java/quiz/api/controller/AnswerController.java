@@ -66,8 +66,17 @@ public class AnswerController {
 
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("/{id}")
     public @ResponseBody ResponseEntity<?> deleteAnswer(@PathVariable Integer id) {
-        return ResponseEntity.ok().build();
+        try{
+            Optional<Answer> answer = answerRepository.findById(id);
+            if (answer.isEmpty()) return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+            answerRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception err) {
+            return ResponseEntity.internalServerError().body(err.getMessage());
+        }
     }
 }

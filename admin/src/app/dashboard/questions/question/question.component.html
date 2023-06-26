@@ -17,7 +17,9 @@
             </span>
             <div>
                 <ng-template ngFor let-type [ngForOf]="QUESTION_TYPES | keyvalue" let-i="index">
-                    <mat-radio-button [value]="type.value">{{type.value | questionTypeToText}}</mat-radio-button>
+                    <mat-radio-button [value]="type.value"
+                        [disabled]="type.value == QUESTION_TYPES.TRUE_FALSE">{{type.value |
+                        questionTypeToText}}</mat-radio-button>
                 </ng-template>
             </div>
         </mat-radio-group>
@@ -32,7 +34,9 @@
             </div>
         </div>
         <div *ngIf="form.get('type')?.value != QUESTION_TYPES.TRUE_FALSE">
-            <app-search-input label="Wyszukaj odpowiedzi" [searchFunc]="searchForAnswers" display="title" [pickedByDefault]="data?.answers ?? []" (pickedItemsChanged)="(updatePickedAnswers($event))"></app-search-input>
+            <app-search-input label="Wyszukaj odpowiedzi" [searchFunc]="searchForAnswers" display="title"
+                [pickedByDefault]="data?.answers ?? []"
+                (pickedItemsChanged)="(updatePickedAnswers($event))"></app-search-input>
         </div>
         <div style="display: flex;">
             <button type="submit" mat-raised-button color="accent" class="btn-center"

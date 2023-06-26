@@ -1,7 +1,8 @@
 <table mat-table [dataSource]="answersData" class="mat-elevation-z8 data-table" style="width: fit-content;">
     <ng-container matColumnDef="active">
         <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let element" [style]="{backgroundColor: element.questions ? '#23c552' : ''}"></td>
+        <td mat-cell *matCellDef="let element" [style]="{backgroundColor: element.questions.length ? '#23c552' : ''}">
+        </td>
     </ng-container>
     <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Odpowiedź </th>
@@ -9,7 +10,11 @@
     </ng-container>
     <ng-container matColumnDef="questions">
         <th mat-header-cell *matHeaderCellDef> Pytania </th>
-        <td mat-cell *matCellDef="let element"> {{element.questions}} </td>
+        <td mat-cell *matCellDef="let element">
+            <div style="display: flex; flex-wrap: wrap; gap:10px;">
+                <span *ngFor="let question of element.questions">{{question.name}}</span>
+            </div>
+        </td>
     </ng-container>
     <ng-container matColumnDef="correct">
         <th mat-header-cell *matHeaderCellDef> Odpowiedź poprawna </th>

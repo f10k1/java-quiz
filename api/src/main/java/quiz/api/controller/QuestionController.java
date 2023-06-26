@@ -140,7 +140,7 @@ public class QuestionController {
         else{
             encodedFile = request.getAttachment().url;
         }
-        byte[] decodedFile = Base64.getDecoder().decode(encodedFile.getBytes(StandardCharsets.UTF_8));
+        byte[] decodedFile = Base64.getUrlDecoder().decode(encodedFile.getBytes(StandardCharsets.UTF_8));
 
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);

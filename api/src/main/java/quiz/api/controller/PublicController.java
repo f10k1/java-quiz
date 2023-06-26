@@ -68,9 +68,8 @@ public class PublicController {
                     if(answers.get(id).getCorrect() != null && answers.get(id).getCorrect()) tmp++;
                     else tmp--;
                 }
-                if (tmp > 0){
-                    points += (double)tmp/counter;
-                }
+                if (counter == 0 && tmp == 0) points++;
+                else if (tmp > 0)points += (double)tmp/counter;
             }
             else if (answer.getAnswersId().size() > 0 && !answer.getAnswersId().get(0).equals(-1) && answers.get(answer.getAnswersId().get(0)).getCorrect() != null && answers.get(answer.getAnswersId().get(0)).getCorrect()) points++;
         };
@@ -82,7 +81,19 @@ public class PublicController {
         ObjectMapper mapper = new ObjectMapper();
 
         ObjectNode node = mapper.createObjectNode();
-        node.put("percentage", points/requestAnswers.size());
+        node.put("percentage", points/requestAnswers.size()*100);
+        if(points/requestAnswers.size()*100 < 50){
+            node.put("grade", 2);
+        }
+        else if (points/requestAnswers.size()*100 < 75){
+            node.put("grade", 3);
+        }
+        else if (points/requestAnswers.size()*100 < 90){
+            node.put("grade", 4);
+        }
+        else node.put("grade", 5);
+
+        node.put("points", points);
 
         return ResponseEntity.ok().body(node);
     }

@@ -9,7 +9,7 @@ public class AuthRegisterValidator {
     @NotEmpty(message = "Email is required") @Email(message = "Enter valid email")
     private String email;
 
-    @NotEmpty(message = "Password is required") @Size(min = 6) @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$", message = "Password must contain letter, number and special character")
+    @NotEmpty(message = "Password is required") @Size(min = 6) @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{6,}$", message = "Password must contain letter, number and special character")
     private String password;
 
     public String getUsername() {
